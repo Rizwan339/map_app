@@ -4,7 +4,7 @@ A Flutter app for drawing different shapes on google maps like polygons, polylin
 
 # Note
 You have to use your own "google API key" for use, and also if you want to test this in the chrome you need to add this line in your index.html:
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+# <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
 
 ## Getting Started
 
