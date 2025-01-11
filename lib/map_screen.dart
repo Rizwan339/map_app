@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_config/flutter_config.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_app/map_controller.dart';
 
@@ -77,127 +76,166 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          GoogleMap(
-            onMapCreated: (GoogleMapController controller) {
-              _controller.complete(controller);
-            },
-            initialCameraPosition: const CameraPosition(
-              target: initialPosition,
-              zoom: 13,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            GoogleMap(
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+              },
+              initialCameraPosition: const CameraPosition(
+                target: initialPosition,
+                zoom: 13,
+              ),
+              mapType: MapType.normal,
+              polygons: controller.polygons.union(controller.tempPolygons),
+              polylines: controller.polylines.union(controller.tempPolylines),
+              circles: controller.circles.union(controller.tempCircles),
+              onTap: _onTap,
+              markers: controller.markers.union(controller.commanderIcons),
             ),
-            mapType: MapType.normal,
-            polygons: controller.polygons.union(controller.tempPolygons),
-            polylines: controller.polylines.union(controller.tempPolylines),
-            circles: controller.circles.union(controller.tempCircles),
-            onTap: _onTap,
-            markers: controller.markers.union(controller.commanderIcons),
-          ),
-          Positioned(
-            top: 20,
-            left: 10,
-            child: Column(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _selectedShape = null;
-                      controller.polygons.clear();
-                      controller.polylines.clear();
-                      controller.circles.clear();
-                    });
-                  },
-                  icon: const Icon(Icons.back_hand),
-                ),
-                // Polyline Button
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _selectedShape = ShapeType.polyline;
-                      controller.polylinePoints.clear();
-                    });
-                  },
-                  icon: const Icon(Icons.polyline),
-                ),
-                // Polygon Button
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _selectedShape = ShapeType.polygon;
-                      controller.polygonPoints.clear();
-                    });
-                  },
-                  icon: const Icon(Icons.polymer),
-                ),
-                // CIrcle Button
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _selectedShape = ShapeType.circle;
-                      controller.circlePoints.clear();
-                    });
-                  },
-                  icon: const Icon(Icons.circle),
-                ),
-                // Square Button
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _selectedShape = ShapeType.square;
-                      controller.polygonPoints.clear();
-                    });
-                  },
-                  icon: const Icon(Icons.square),
-                ),
-              ],
-            ),
-          ),
-          if (_selectedShape != null)
             Positioned(
-              right: 10,
               top: 20,
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    saveShape();
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+              left: 10,
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black54),
+                    borderRadius: const BorderRadius.all(Radius.circular(20))),
+                child: Column(
+                  children: [
+                    // Polyline Button
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedShape = ShapeType.polyline;
+                          controller.polylinePoints.clear();
+                        });
+                      },
+                      icon: Icon(Icons.polyline,
+                          color: _selectedShape == ShapeType.polyline
+                              ? Colors.blueGrey
+                              : Colors.black87),
+                    ),
+                    // Polygon Button
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedShape = ShapeType.polygon;
+                          controller.polygonPoints.clear();
+                        });
+                      },
+                      icon: Icon(Icons.polymer,
+                          color: _selectedShape == ShapeType.polygon
+                              ? Colors.blueGrey
+                              : Colors.black87),
+                    ),
+                    // CIrcle Button
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedShape = ShapeType.circle;
+                          controller.circlePoints.clear();
+                        });
+                      },
+                      icon: Icon(Icons.circle,
+                          color: _selectedShape == ShapeType.circle
+                              ? Colors.blueGrey
+                              : Colors.black87),
+                    ),
+                    // Square Button
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedShape = ShapeType.square;
+                          controller.polygonPoints.clear();
+                        });
+                      },
+                      icon: Icon(Icons.square,
+                          color: _selectedShape == ShapeType.square
+                              ? Colors.blueGrey
+                              : Colors.black87),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          commanderIconsDialog(context);
+                        });
+                      },
+                      icon: const Icon(Icons.add_location_alt_rounded,
+                          color: Colors.black87),
+                    ),
+                  ],
                 ),
-                child: const Text("Done"),
               ),
             ),
-          Positioned(
-            bottom: 10,
-            left: 10,
-            child: IconButton(
-              onPressed: () {
-                setState(() {
-                  controller.polygons.clear();
-                  controller.polylines.clear();
-                  controller.circles.clear();
-                  controller.markers.clear();
-                  controller.commanderIcons.clear();
-                });
-              },
-              icon: const Icon(Icons.delete),
+            if (_selectedShape != null)
+              Positioned(
+                right: 10,
+                top: 20,
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      saveShape();
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                  ),
+                  child: const Text("Done",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+            Positioned(
+              bottom: 10,
+              left: 10,
+              child: Container(
+                height: 60,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black54),
+                    borderRadius: const BorderRadius.all(Radius.circular(10))),
+                padding: const EdgeInsets.all(4),
+                child: Row(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _selectedShape = null;
+                          controller.polygons.clear();
+                          controller.polylines.clear();
+                          controller.circles.clear();
+                        });
+                      },
+                      child: const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [Icon(Icons.delete), Text('Shapes')],
+                      ),
+                    ),
+                    const VerticalDivider(
+                      color: Colors.black,
+                      thickness: .6,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            controller.commanderIcons.clear();
+                          });
+                        },
+                        child: const Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [Icon(Icons.delete), Text('Icons')],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          Positioned(
-            bottom: 10,
-            left: 50,
-            child: IconButton(
-              onPressed: () {
-                setState(() {
-                  commanderIconsDialog(context);
-                });
-              },
-              icon: const Icon(Icons.add_box),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -219,7 +257,7 @@ class _MapScreenState extends State<MapScreen> {
                     // print("Button pressed");
                   });
                 },
-                child: Container(
+                child: SizedBox(
                     height: 30,
                     width: 40,
                     child: Image.asset(
@@ -237,7 +275,7 @@ class _MapScreenState extends State<MapScreen> {
                     Navigator.pop(context);
                   });
                 },
-                child: Container(
+                child: SizedBox(
                     height: 30,
                     width: 40,
                     child: Image.asset(
@@ -255,7 +293,7 @@ class _MapScreenState extends State<MapScreen> {
                     Navigator.pop(context);
                   });
                 },
-                child: Container(
+                child: SizedBox(
                     height: 30,
                     width: 40,
                     child: Image.asset(
@@ -273,7 +311,7 @@ class _MapScreenState extends State<MapScreen> {
                     Navigator.pop(context);
                   });
                 },
-                child: Container(
+                child: SizedBox(
                     height: 30,
                     width: 40,
                     child: Image.asset(
@@ -294,7 +332,8 @@ class _MapScreenState extends State<MapScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Add Details Shape'),
+          backgroundColor: Colors.white,
+          title: const Text('Add Color'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -303,19 +342,19 @@ class _MapScreenState extends State<MapScreen> {
                   Navigator.pop(
                       context, Colors.red); // Return the selected color
                 },
-                child: const Text('Red color'),
+                child: const Text('Red Colour'),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context, Colors.blue);
                 },
-                child: const Text('Blue color'),
+                child: const Text('Blue Colour'),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context, Colors.green);
                 },
-                child: const Text('Green color'),
+                child: const Text('Green Colour'),
               ),
             ],
           ),
