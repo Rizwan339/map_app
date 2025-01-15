@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   google_maps_flutter: ^2.9.0
   flutter_config: ^2.0.2
+  flutter_speed_dial: ^7.0.0
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,12 @@ flutter:
     - assets/square.png
     - assets/analysis.png
     - assets/hand.png
+    - assets/car.png
+    - assets/fender-bender.png
+    - assets/maintenance.png
+    - assets/pin-point.png
+    - assets/tracking-app.png
+    - assets/worldwide.png
     - assets/circle.png
 
   # An image asset can refer to one or more resolution-specific "variants", see

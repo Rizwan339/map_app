@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_app/map_controller.dart';
 
@@ -13,6 +14,9 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   MapController controller = MapController();
+
+  bool columnOpened = false;
+  bool deleteOpened = false;
 
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
@@ -60,7 +64,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    _loadCustomIcon(image: "assets/dot.png");
+    _loadCustomIcon(image: "assets/small_dot.png");
   }
 
   Future<void> _loadCustomIcon({required String image}) async {
@@ -96,7 +100,7 @@ class _MapScreenState extends State<MapScreen> {
             ),
             Positioned(
               top: 20,
-              left: 10,
+              right: 10,
               child: Container(
                 decoration: BoxDecoration(
                     color: Colors.white,
@@ -104,74 +108,86 @@ class _MapScreenState extends State<MapScreen> {
                     borderRadius: const BorderRadius.all(Radius.circular(20))),
                 child: Column(
                   children: [
-                    // Polyline Button
                     IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedShape = ShapeType.polyline;
-                          controller.polylinePoints.clear();
-                        });
-                      },
-                      icon: Icon(Icons.polyline,
-                          color: _selectedShape == ShapeType.polyline
-                              ? Colors.blueGrey
-                              : Colors.black87),
-                    ),
-                    // Polygon Button
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedShape = ShapeType.polygon;
-                          controller.polygonPoints.clear();
-                        });
-                      },
-                      icon: Icon(Icons.polymer,
-                          color: _selectedShape == ShapeType.polygon
-                              ? Colors.blueGrey
-                              : Colors.black87),
-                    ),
-                    // CIrcle Button
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedShape = ShapeType.circle;
-                          controller.circlePoints.clear();
-                        });
-                      },
-                      icon: Icon(Icons.circle,
-                          color: _selectedShape == ShapeType.circle
-                              ? Colors.blueGrey
-                              : Colors.black87),
-                    ),
-                    // Square Button
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedShape = ShapeType.square;
-                          controller.polygonPoints.clear();
-                        });
-                      },
-                      icon: Icon(Icons.square,
-                          color: _selectedShape == ShapeType.square
-                              ? Colors.blueGrey
-                              : Colors.black87),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          commanderIconsDialog(context);
-                        });
-                      },
-                      icon: const Icon(Icons.add_location_alt_rounded,
-                          color: Colors.black87),
-                    ),
+                        onPressed: () {
+                          setState(() {
+                            columnOpened = columnOpened == true ? false : true;
+                          });
+                        },
+                        icon: const Icon(Icons.edit_location_alt)),
+                    if (columnOpened)
+                      Column(
+                        children: [
+                          // Polyline Button
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _selectedShape = ShapeType.polyline;
+                                controller.polylinePoints.clear();
+                              });
+                            },
+                            icon: Icon(Icons.polyline,
+                                color: _selectedShape == ShapeType.polyline
+                                    ? Colors.blueGrey
+                                    : Colors.black87),
+                          ),
+                          // Polygon Button
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _selectedShape = ShapeType.polygon;
+                                controller.polygonPoints.clear();
+                              });
+                            },
+                            icon: Icon(Icons.polymer,
+                                color: _selectedShape == ShapeType.polygon
+                                    ? Colors.blueGrey
+                                    : Colors.black87),
+                          ),
+                          // CIrcle Button
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _selectedShape = ShapeType.circle;
+                                controller.circlePoints.clear();
+                              });
+                            },
+                            icon: Icon(Icons.circle,
+                                color: _selectedShape == ShapeType.circle
+                                    ? Colors.blueGrey
+                                    : Colors.black87),
+                          ),
+                          // Square Button
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _selectedShape = ShapeType.square;
+                                controller.polygonPoints.clear();
+                              });
+                            },
+                            icon: Icon(Icons.square,
+                                color: _selectedShape == ShapeType.square
+                                    ? Colors.blueGrey
+                                    : Colors.black87),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                commanderIconsDialog(context);
+                              });
+                            },
+                            icon: const Icon(Icons.add_location_alt_rounded,
+                                color: Colors.black87),
+                          ),
+                        ],
+                      )
                   ],
                 ),
               ),
             ),
             if (_selectedShape != null)
               Positioned(
-                right: 10,
+                left: 10,
                 top: 20,
                 child: ElevatedButton(
                   onPressed: () {
@@ -187,51 +203,46 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ),
             Positioned(
-              bottom: 10,
+              bottom: 20,
               left: 10,
-              child: Container(
-                height: 60,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.black54),
-                    borderRadius: const BorderRadius.all(Radius.circular(10))),
-                padding: const EdgeInsets.all(4),
-                child: Row(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _selectedShape = null;
-                          controller.polygons.clear();
-                          controller.polylines.clear();
-                          controller.circles.clear();
-                        });
-                      },
-                      child: const Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [Icon(Icons.delete), Text('Shapes')],
-                      ),
-                    ),
-                    const VerticalDivider(
-                      color: Colors.black,
-                      thickness: .6,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            controller.commanderIcons.clear();
-                          });
-                        },
-                        child: const Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [Icon(Icons.delete), Text('Icons')],
-                        ),
-                      ),
-                    ),
-                  ],
+              child: SpeedDial(
+                icon: Icons.delete,
+                activeIcon: Icons.close,
+                backgroundColor: Colors.white,
+                overlayOpacity: .3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                  side: const BorderSide(color: Colors.black87),
                 ),
+                children: [
+                  SpeedDialChild(
+                    child: const Icon(Icons.line_axis),
+                    onTap: () {
+                      setState(() {
+                        _selectedShape = null;
+                        controller.polygons.clear();
+                        controller.polylines.clear();
+                        controller.circles.clear();
+                      });
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                      side: const BorderSide(color: Colors.black87),
+                    ),
+                  ),
+                  SpeedDialChild(
+                    child: const Icon(Icons.car_crash_sharp),
+                    onTap: () {
+                      setState(() {
+                        controller.commanderIcons.clear();
+                      });
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                      side: const BorderSide(color: Colors.black87),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -245,9 +256,8 @@ class _MapScreenState extends State<MapScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Commander Icons"),
-          content: Row(
-            mainAxisSize: MainAxisSize.max,
+          title: const Text("Add Markers"),
+          content: Wrap(
             children: [
               InkWell(
                 onTap: () {
@@ -271,7 +281,7 @@ class _MapScreenState extends State<MapScreen> {
               InkWell(
                 onTap: () {
                   setState(() {
-                    _addIcon("assets/analysis.png");
+                    _addIcon("assets/maintenance.png");
                     Navigator.pop(context);
                   });
                 },
@@ -279,7 +289,7 @@ class _MapScreenState extends State<MapScreen> {
                     height: 30,
                     width: 40,
                     child: Image.asset(
-                      "assets/analysis.png",
+                      "assets/maintenance.png",
                       fit: BoxFit.contain,
                     )),
               ),
@@ -289,7 +299,7 @@ class _MapScreenState extends State<MapScreen> {
               InkWell(
                 onTap: () {
                   setState(() {
-                    _addIcon("assets/hand.png");
+                    _addIcon("assets/pin-point.png");
                     Navigator.pop(context);
                   });
                 },
@@ -297,7 +307,7 @@ class _MapScreenState extends State<MapScreen> {
                     height: 30,
                     width: 40,
                     child: Image.asset(
-                      "assets/hand.png",
+                      "assets/pin-point.png",
                       fit: BoxFit.contain,
                     )),
               ),
@@ -307,7 +317,7 @@ class _MapScreenState extends State<MapScreen> {
               InkWell(
                 onTap: () {
                   setState(() {
-                    _addIcon("assets/polygon.png");
+                    _addIcon("assets/tracking-app.png");
                     Navigator.pop(context);
                   });
                 },
@@ -315,7 +325,25 @@ class _MapScreenState extends State<MapScreen> {
                     height: 30,
                     width: 40,
                     child: Image.asset(
-                      "assets/polygon.png",
+                      "assets/tracking-app.png",
+                      fit: BoxFit.contain,
+                    )),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    _addIcon("assets/car.png");
+                    Navigator.pop(context);
+                  });
+                },
+                child: SizedBox(
+                    height: 30,
+                    width: 40,
+                    child: Image.asset(
+                      "assets/car.png",
                       fit: BoxFit.contain,
                     )),
               ),
